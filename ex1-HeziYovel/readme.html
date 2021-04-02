@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+          integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <title>Readme - Hezi Yovel</title>
+</head>
+<body>
+<div class="container-fluid">
+
+    <div class="jumbotron bg-primary text-light">
+        <h1>Ex1 - Java URL Checking console application</h1>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <!--                <li class="nav-item">-->
+                <!--                    <a class="nav-link" href="/">Home</a>-->
+                <!--                </li>-->
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Readme <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="row mb-3">
+        <div class="col-12 col-lg-4">
+            <ul class="list-group">
+                <li class="list-group-item">Yekhezkel Yovel</li>
+                <li class="list-group-item">ID 066733700</li>
+                <li class="list-group-item">yekhezkel.yovel@gmail.com</li>
+            </ul>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4">
+            <h2>Execution</h2>
+            <p>The submission is an IntelliJ IDEA project that can be run directly from the IDE.</p>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4">
+            <h2>Assumptions</h2>
+            <p>The site uses bootstap CDN therefore assumes an internet connection is available.</p>
+        </div>
+    </div>
+    <div class="row m-0">
+        <div class="col-xl-3 bg-light border">
+            <h2>Documentation</h2>
+            The full documentation is <a href="doc/">here</a>.
+            <hr/>
+            <h2>Known Issues</h2>
+            There are no known issues.
+            <ul>
+            </ul>
+        </div>
+        <div class="col-xl-6 bg-light border text-break">
+            <h2>How is my code generic?</h2>
+            <p>
+                I used the factory, strategy, command and visitor design patterns in order to achieve de-coupling of
+                classes, so that in the future, new commands can be integrated into the solution with minimal
+                modification of existing code. The specific effects I've attempted to achieve are detailed below in the
+                <a href="#dp-used">Design Patterns Used</a> section.
+            </p>
+            <h2>How to add a new command?</h2>
+            <h5>EDIT: this is not relevant anymore since there is reflection-based auto-registration.</h5>
+            <p>
+                In order to add the following command:
+                op_code url arg1 arg2
+                Do the following:
+            </p>
+            <ol>
+                <li>
+                    Create a new class MyUrlCheck that implements UrlCheck
+                </li>
+                <li>
+                    Implement the logic of the command in the 'checkUrl' method of MyUrlCheck
+                </li>
+                <li>
+                    Add a public static void register() function which does the actual registration
+                </li>
+            </ol>
+            That's it, the new command will be automatically registered in UrlCheckFactory.
+            <hr/>
+            <h2 id="dp-used">Design Patterns Used</h2>
+            <ul>
+                <li>
+                    <h5>Factory + Strategy + Command</h5>
+                    <h6>Implemented by:</h6>
+                    <ul>
+                        <li>UrlCheckFactory</li>
+                        <li>LanguageCheckFactory</li>
+                        <li>UrlCheckFactory.GenerateUrlCheck</li>
+                        <li>LanguageCheckFactory.GenerateLanguageCheck</li>
+                    </ul>
+                    <p>
+                        The factory DP is used in my code in combination with Strategy in order to allow usage
+                        of not yet defined implementations of UrlCheck, which means easily adding new checks to
+                        the existing code, without changing it.
+                    </p>
+                    <p>
+                        In addition, the factory DP enables separate implementations of UrlCheck to interact with
+                        each-other without actually knowing each-other (as part of the visitor DP).
+                    </p>
+                    <p>
+                        The strategy DP is used in my code to avoid using hard-coded switch/if statements when
+                        choosing the appropriate UrlCheck implementation to use for a specific command:
+                        Any implementation that is registered in the factory can be fetched and used by the command's
+                        op-code, so all it takes to add a completely new command is just to register the UrlCheck
+                        in the factory.
+                    </p>
+                    <p>
+                        The command DP is used in my code to de-couple implementations from the factory they register
+                        at, by enabling the factory to use a command to generate instances instead of using the native
+                        constructors.
+                    </p>
+                </li>
+                <li>
+                    <h5>Visitor/Double-Dispatch</h5>
+                    <h6>Used by:</h6>
+                    <ul>
+                        <li>UrlCheckW</li>
+                    </ul>
+                    <p>
+                        The visitor DP is used in my code to reuse the code of an un-known implementation of UrlCheck
+                        that is expected to be registered for the 't' op-code, from UrlCheckW, in order to check if
+                        a URL is textual before searching it for the words from a dictionary file.
+                    </p>
+                </li>
+            </ul>
+            <hr/>
+            <h2>Design Decisions</h2>
+            <ul>
+                <li>
+                    <h5>Language identification algorithm</h5>
+                    <p>
+                        For the language check I used the first algorithm (letter frequency),
+                        with letter frequencies from
+                        <a href="https://en.wikipedia.org/wiki/Letter_frequency#Relative_frequencies_of_letters_in_other_languages">Wikipedia</a>:
+                    </p>
+                    <ol>
+                        <li>
+                            Scan the text from the URL and count the occurrences of every character
+                        </li>
+                        <li>
+                            Convert the counts to frequencies by dividing them by the total length of the text
+                        </li>
+                        <li>
+                            Compute the variance between the "official" frequencies from Wikipedia to the frequencies
+                            of <strong>English letters only</strong> found in the first step
+                        </li>
+                        <li>
+                            If the computed variance is smaller then the threshold, return true, else return false.
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    <h5>Memoization</h5>
+                    <p>
+                        In my factory classes I decided to use memoization in order to avoid re-instantiation of
+                        classes, since there is no need for a new instance on each check - a previously used instance
+                        can easily be reset to use a new command and perform a new check.
+                    </p>
+                    <p>
+                        Since this program is intended for a web proxy, I feel time performance is more important than
+                        memory usage so if memory can be used to increase time performance it should be done.
+                    </p>
+                </li>
+                <li>
+                    <h5>Factory Registrations</h5>
+                    <p>
+                        In order to solve the problem of registration to a factory in C++, a static variable is used
+                        to call a static "register" function in the factory. In Java this doesn't work, and in order
+                        to enable fully automated registration, reflection is required. Since this is out of the scope
+                        of this exercise, I simply created a class 'App' which has a single public method 'run',
+                        that performs the registrations and then instantiates and runs Controller. This way the
+                        'registerAll' method of the 'App' class is the only piece of code that needs to be modified
+                        when a command is added or replaced.
+                    </p>
+                </li>
+            </ul>
+            <hr/>
+            <h2>Testing</h2>
+            <p>My implementation correctly identified all test pages and in addition the URL's listed below.</p>
+            <h6>First I tested on several non-latin alphabets:</h6>
+            <ul>
+                <li>
+                    Greek:
+                    <br/>
+                    l <a href="https://el.wikipedia.org/wiki/%CE%A0%CF%8D%CE%BB%CE%B7:%CE%9A%CF%8D%CF%81%CE%B9%CE%B1">https://el.wikipedia.org/wiki/%CE%A0%CF%8D%CE%BB%CE%B7:%CE%9A%CF%8D%CF%81%CE%B9%CE%B1</a>
+                    english
+                    <br/>
+                    false
+                </li>
+                <li>
+                    Hebrew:
+                    <br/>
+                    l <a href="https://he.wikipedia.org/wiki/%D7%A2%D7%9E%D7%95%D7%93_%D7%A8%D7%90%D7%A9%D7%99">https://he.wikipedia.org/wiki/%D7%A2%D7%9E%D7%95%D7%93_%D7%A8%D7%90%D7%A9%D7%99</a>
+                    english
+                    <br/>
+                    false
+                </li>
+                <li>
+                    Arabic:
+                    <br/>
+                    l
+                    <a href="https://ar.wikipedia.org/wiki/%D8%A7%D9%84%D8%B5%D9%81%D8%AD%D8%A9_%D8%A7%D9%84%D8%B1%D8%A6%D9%8A%D8%B3%D9%8A%D8%A9">https://ar.wikipedia.org/wiki/%D8%A7%D9%84%D8%B5%D9%81%D8%AD%D8%A9_%D8%A7%D9%84%D8%B1%D8%A6%D9%8A%D8%B3%D9%8A%D8%A9</a>
+                    english
+                    <br/>
+                    false
+                </li>
+                <li>
+                    Russian:
+                    <br/>
+                    l
+                    <a href="https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0">https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0</a>
+                    english
+                    <br/>
+                    false
+                </li>
+            </ul>
+
+            <h6>
+                Then I tested Wikipedia in German, to make sure latin alphabet based languages are not wrongfully
+                identified as English (except for English itself of course):
+            </h6>
+
+            <ul>
+                <li>
+                    German:
+                    <br/>
+                    l <a href="https://de.wikipedia.org/wiki/Wikipedia:Hauptseite">https://de.wikipedia.org/wiki/Wikipedia:Hauptseite</a>
+                    english
+                    <br/>
+                    false
+                </li>
+            </ul>
+
+            <h6>
+                Then I tested the New York Times and as many English speaking countries governments as I could think
+                of, to check if different dialects are a problem.
+            </h6>
+
+            <ul>
+                <li>
+                    New York Times:
+                    <br/>
+                    l <a href="https://www.nytimes.com/">https://www.nytimes.com/</a> english
+                    <br/>
+                    true
+                </li>
+
+                <li>
+                    British government:
+                    <br/>
+                    l <a href="https://www.gov.uk/government/how-government-works">https://www.gov.uk/government/how-government-works</a> english
+                    <br/>
+                    true
+                </li>
+
+                <li>
+                    Irish government:
+                    <br/>
+                    l <a href="https://www.gov.ie/en/">https://www.gov.ie/en/</a> english
+                    <br/>
+                    true
+                </li>
+
+                <li>
+                    South African government:
+                    <br/>
+                    l <a href="https://www.gov.za/#">https://www.gov.za/#</a> english
+                    <br/>
+                    true
+                </li>
+
+                <li>
+                    Australian government:
+                    <br/>
+                    l <a href="https://www.australia.gov.au/">https://www.australia.gov.au/</a> english
+                    <br/>
+                    true
+                </li>
+
+                <li>
+                    New Zealand government:
+                    <br/>
+                    l <a href="https://www.govt.nz/">https://www.govt.nz/</a> english
+                    <br/>
+                    true
+                </li>
+
+                <li>
+                    Indian government:
+                    <br/>
+                    l <a href="https://www.india.gov.in/">https://www.india.gov.in/</a> english
+                    <br/>
+                    true
+                </li>
+            </ul>
+
+            <h6>
+                Last (almost), I tested this page about English dialects because it contains many unusual phrases:
+            </h6>
+
+            <ul>
+                <li>
+                    l <a href="http://webspace.ship.edu/cgboer/dialectsofenglish.html">http://webspace.ship.edu/cgboer/dialectsofenglish.html</a> english
+                    <br/>
+                    true
+                </li>
+            </ul>
+
+            <h6>
+                Now just for fun, I tested UEA.org (World Esperanto Association):
+            </h6>
+
+            <ul>
+                <li>
+                    l <a href="https://uea.org/info/eo/kio_estas_uea">https://uea.org/info/eo/kio_estas_uea</a> english
+                    <br/>
+                    false
+                </li>
+            </ul>
+
+            <address>Submitted 08 April 2021</address>
+        </div>
+
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+                integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+                crossorigin="anonymous"></script>
+</body>
+</html>
